@@ -26,14 +26,15 @@ export default class MnbCurrencyRates extends React.Component {
         const a = rates.find(r => r.curr === from)
         const b = rates.find(r => r.curr === to)
         const n = parseFloat(amount)
+
         if (!a || !b || isNaN(n)) return ""
-        // HUF per single unit of each currency
+        
         const result = n * (a.value / a.unit) / (b.value / b.unit)
         return `${result.toLocaleString("hu-HU", {maximumFractionDigits: 4})} ${to}`
     }
 
     async componentDidMount() {
-        const url = "http://127.0.0.1:3000/api/rates"; /* FORMAT: {date: "", rates: [{curr: "", unit: 1, value: 1}]} */
+        const url = "http://127.0.0.1:3000/api/rates";
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Response status: ${response.status}`);
