@@ -3,12 +3,21 @@ import express from "express";
 const app = express();
 const port = 3000;
 
-app.get('/rates', (req, res) => {
-  handler(req, res)
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
+app.get('/api/rates', (req, res) => {
+    handler(req, res)
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+    console.log(`Example app listening on port ${port}`);
 });
 
 // PARSING
@@ -57,8 +66,8 @@ export default async function handler(req, res) {
                                         <!-- No parameters -->
                                     </GetCurrentExchangeRates>
                                 </Body>
-                            </Envelope>`
-
+                            </Envelope>
+        `
         
         const soapRes = await fetch(endpoint, {
             method: "POST",
@@ -74,7 +83,6 @@ export default async function handler(req, res) {
         const resXml = await soapRes.text()
 
         const parsed = parseRates(resXml)
-        console.log("PARSED: ", parsed)
 
         const {date = new Date(Date.now()), rates = []} = parsed
         return res.status(200).json({date, rates})
